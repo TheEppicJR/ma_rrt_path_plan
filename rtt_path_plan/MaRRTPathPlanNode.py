@@ -71,6 +71,7 @@ class MaRRTPathPlanNode(Node):
         # visuals
         self.treeVisualPub: Publisher = self.create_publisher(MarkerArray, "/visual/tree_marker_array", 0)
         self.bestBranchVisualPub: Publisher = self.create_publisher(Marker, "/visual/best_tree_branch", 1)
+        self.newWaypointsVisualPub: Publisher = self.create_publisher(Marker, "/visual/new_waypoints", 1)
         self.filteredBranchVisualPub: Publisher = self.create_publisher(Marker, "/visual/filtered_tree_branch", 1)
         self.delaunayLinesVisualPub: Publisher = self.create_publisher(Marker, "/visual/delaunay_lines", 1)
         self.waypointsVisualPub: Publisher = self.create_publisher(MarkerArray, "/visual/waypoints", 1)
@@ -99,7 +100,7 @@ class MaRRTPathPlanNode(Node):
 
         # start = time.time()
         orientation_q = odom_msg.pose.pose.orientation
-        orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
+        orientation_list = [orientation_q.w, orientation_q.x, orientation_q.y, orientation_q.z]
         (roll, pitch, yaw)  = quat2euler(orientation_list)
 
         self.carPosX = odom_msg.pose.pose.position.x
@@ -157,7 +158,7 @@ class MaRRTPathPlanNode(Node):
         start = [self.carPosX, self.carPosY, self.carPosYaw]
         iterationNumber = 1000
         planDistance = 12
-        expandDistance = 1.0
+        expandDistance = 1
         expandAngle = 20
 
         # rrt planning
@@ -171,7 +172,7 @@ class MaRRTPathPlanNode(Node):
 
         self.publishTreeVisual(nodeList, leafNodes)
 
-        frontConesBiggerDist = 15
+        frontConesBiggerDist = 12
         largerGroupFrontCones = self.getFrontConeObstacles(self.map, frontConesBiggerDist)
 
         # BestBranch
@@ -475,7 +476,7 @@ class MaRRTPathPlanNode(Node):
                 p.z = 0.0
                 path_markers2.append(p)
             newWaypointsMarker.points = path_markers2
-
+            self.newWaypointsVisualPub.publish(newWaypointsMarker)
             markers.append(newWaypointsMarker)
         
         markerArray.markers = markers
