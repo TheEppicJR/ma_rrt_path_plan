@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = "rtt_path_plan"
+package_name = "rrt_path_plan"
 
 setup(
     name=package_name,
@@ -19,7 +19,7 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "rtt_plan = rtt_path_plan.MaRRTPathPlanNode:main",
+            "rrt_plan = rrt_path_plan.MaRRTPathPlanNode:main",
         ],
     },
 )
